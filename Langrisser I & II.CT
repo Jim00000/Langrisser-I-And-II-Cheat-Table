@@ -414,7 +414,7 @@ dealloc(newmem)
         </CheatEntry>
         <CheatEntry>
           <ID>17</ID>
-          <Description>"Unlimited move in this turn (effect on Player)"</Description>
+          <Description>"Unlimited Move In This Turn (effect on Player)"</Description>
           <LastState Activated="1"/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:SetMoveState+10)
@@ -522,6 +522,7 @@ URL          : https://github.com/Jim00000/Langrisser-I-And-II-Cheat-Table
 - No MP Consumption (effect on Player/Ally)
 - No Magic Effect Timer Decrement (effect on Player/Ally)
 - Full Move Range (effect on Player)
+- Unlimited Move In This Turn (effect on Player)
 [ChangeLog]
 03.14.2020 update
 - Add "No Eagic Effect Timer Decrement" cheat
