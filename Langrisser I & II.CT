@@ -97,7 +97,7 @@ unregistersymbol(FUND)
         <CheatEntry>
           <ID>12</ID>
           <Description>"God Mode (effect on Player/Ally)"</Description>
-          <LastState/>
+          <LastState Activated="1"/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:AddHP+3a)
 define(bytes,89 48 60 48 8B 47 18)
@@ -332,7 +332,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>16</ID>
           <Description>"Full Move Range (effect on Player)"</Description>
-          <LastState/>
+          <LastState Activated="1"/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:GetMoveRange+b8)
 define(bytes,49 8B C6 48 8D 65 E8)
@@ -415,7 +415,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>17</ID>
           <Description>"Unlimited Move In This Turn (effect on Player)"</Description>
-          <LastState/>
+          <LastState Activated="1"/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:SetMoveState+10)
 define(bytes,89 70 48 83 FE 03)
@@ -490,7 +490,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>18</ID>
           <Description>"Make All Units Become Player-Controlled (i.e. instant win while you end the turn)"</Description>
-          <LastState/>
+          <LastState Activated="1"/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:SetPlayerType+18)
 define(bytes,89 48 3C 48 8B 47 10)
@@ -625,6 +625,83 @@ dealloc(newmem)
 }
 </AssemblerScript>
         </CheatEntry>
+        <CheatEntry>
+          <ID>20</ID>
+          <Description>"Set Attack 999 (effect on Player)"</Description>
+          <LastState Activated="1"/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>define(address,UnitCTRL:GetP_Attack+147)
+define(bytes,49 8B C6 48 8D 65 E8)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,UnitCTRL:GetP_Attack+147)
+
+label(code)
+label(return)
+
+newmem:
+  // rdi    : UnitCTRL
+  // rdi+18 : GameCommon.UnitWork
+  mov rax, [rdi+18]
+  // rax+3c : GameCommon.UnitWork::playerType
+  // Check whether the unit is player-controlled
+  cmp [rax+3c], 0
+  jne code
+
+  // If so, set the attack 999
+  mov r14, #999
+
+code:
+  mov rax,r14
+  lea rsp,[rbp-18]
+  jmp return
+
+address:
+  jmp newmem
+  nop 2
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // mov rax,r14
+  // lea rsp,[rbp-18]
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: UnitCTRL:GetP_Attack+147
+
+1B616D57: 49 BB 54 47 5F 1B 00 00 00 00  -  mov r11,000000001B5F4754
+1B616D61: 41 FF D3                       -  call r11
+1B616D64: 48 83 C4 20                    -  add rsp,20
+1B616D68: 44 03 F0                       -  add r14d,eax
+1B616D6B: B8 01 00 00 00                 -  mov eax,00000001
+1B616D70: 45 85 F6                       -  test r14d,r14d
+1B616D73: 4C 0F 4E F0                    -  cmovle r14,rax
+1B616D77: B8 E7 03 00 00                 -  mov eax,000003E7
+1B616D7C: 41 81 FE E8 03 00 00           -  cmp r14d,000003E8
+1B616D83: 4C 0F 4D F0                    -  cmovge r14,rax
+// ---------- INJECTING HERE ----------
+1B616D87: 49 8B C6                       -  mov rax,r14
+1B616D8A: 48 8D 65 E8                    -  lea rsp,[rbp-18]
+// ---------- DONE INJECTING  ----------
+1B616D8E: 41 5E                          -  pop r14
+1B616D90: 5F                             -  pop rdi
+1B616D91: 5E                             -  pop rsi
+1B616D92: C9                             -  leave 
+1B616D93: C3                             -  ret 
+1B616D94: 00 00                          -  add [rax],al
+1B616D96: 00 00                          -  add [rax],al
+1B616D98: 00 00                          -  add [rax],al
+1B616D9A: 00 00                          -  add [rax],al
+1B616D9C: 54                             -  push rsp
+}
+</AssemblerScript>
+        </CheatEntry>
       </CheatEntries>
     </CheatEntry>
   </CheatEntries>
@@ -632,14 +709,14 @@ dealloc(newmem)
   <Structures StructVersion="2">
     <Structure Name="UnitCTRL" AutoFill="0" AutoCreate="1" DefaultHex="0" AutoDestroy="0" DoNotSaveLocal="0" RLECompression="1" AutoCreateStructsize="4096">
       <Elements>
-        <Element Offset="16" Vartype="Pointer" Bytesize="4" Description="unitManager" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="24" Vartype="Pointer" Bytesize="4" Description="unitWork" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="32" Vartype="Pointer" Bytesize="4" Description="unitObject" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="40" Vartype="Pointer" Bytesize="4" Description="unitGraphics" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="48" Vartype="Pointer" Bytesize="4" Description="classData" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="56" Vartype="Pointer" Bytesize="4" Description="charactorData" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="64" Vartype="Pointer" Bytesize="4" Description="weaponData" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="72" Vartype="Pointer" Bytesize="4" Description="leveldata" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="16" Vartype="Pointer" Bytesize="8" Description="unitManager" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="24" Vartype="Pointer" Bytesize="8" Description="unitWork" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="32" Vartype="Pointer" Bytesize="8" Description="unitObject" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="40" Vartype="Pointer" Bytesize="8" Description="unitGraphics" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="48" Vartype="Pointer" Bytesize="8" Description="classData" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="56" Vartype="Pointer" Bytesize="8" Description="charactorData" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="64" Vartype="Pointer" Bytesize="8" Description="weaponData" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="72" Vartype="Pointer" Bytesize="8" Description="leveldata" DisplayMethod="Unsigned Integer"/>
         <Element Offset="80" Vartype="4 Bytes" Bytesize="4" Description="selectLanguage" DisplayMethod="Unsigned Integer"/>
         <Element Offset="84" Vartype="4 Bytes" Bytesize="4" Description="move_offsetx" DisplayMethod="Unsigned Integer"/>
         <Element Offset="88" Vartype="4 Bytes" Bytesize="4" Description="move_offsety" DisplayMethod="Unsigned Integer"/>
@@ -657,6 +734,7 @@ URL          : https://github.com/Jim00000/Langrisser-I-And-II-Cheat-Table
 [Cheat Table Contents]
 - Fund Pointer
 - Set Class Point (CP) as 999
+- Set Attack 999 (effect on player-controlled units)
 - God Mode (effect on Player/Ally)
 - No MP Consumption (effect on Player/Ally)
 - No Magic Effect Timer Decrement (effect on Player/Ally)
@@ -665,6 +743,7 @@ URL          : https://github.com/Jim00000/Langrisser-I-And-II-Cheat-Table
 - Make All Units Become Player-Controlled
 [ChangeLog]
 03.14.2020 update
+- Add "Set Attack 999" cheat
 - Add "Set Class Point (CP) as 999" cheat
 - Add "No Eagic Effect Timer Decrement" cheat
 - Add "Full Move Range" cheat
