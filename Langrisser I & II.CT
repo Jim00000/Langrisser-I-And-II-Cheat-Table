@@ -412,6 +412,81 @@ dealloc(newmem)
 }
 </AssemblerScript>
         </CheatEntry>
+        <CheatEntry>
+          <ID>17</ID>
+          <Description>"Unlimited move in this turn (effect on Player)"</Description>
+          <LastState Activated="1"/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>define(address,UnitCTRL:SetMoveState+10)
+define(bytes,89 70 48 83 FE 03)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,UnitCTRL:SetMoveState+10)
+
+label(code)
+label(return)
+
+newmem:
+  // rax = GameCommon.UnitWork
+  // rax+3c : GameCommon.UnitWork::playerType (System.Int32)
+  // expect 0 : human player
+  // If this unit is not player-controlled, skip it
+  cmp [rax+3c], 0
+  jne code
+  // set move state as unmoved
+  mov esi, 0
+
+code:
+  mov [rax+48],esi
+  cmp esi,03
+  jmp return
+
+address:
+  jmp newmem
+  nop
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // mov [rax+48],esi
+  // cmp esi,03
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: SetMoveState+10
+
+1B67381A: 9D                             -  popfq 
+1B67381B: 12 00                          -  adc al,byte ptr [rax]
+1B67381D: 00 00                          -  add [rax],al
+1B67381F: 00 55 48                       -  add [rbp+48],dl
+1B673822: 8B EC                          -  mov ebp,esp
+1B673824: 56                             -  push rsi
+1B673825: 57                             -  push rdi
+1B673826: 48 8B F9                       -  mov rdi,rcx
+1B673829: 48 8B F2                       -  mov rsi,rdx
+1B67382C: 48 8B 47 18                    -  mov rax,[rdi+18]
+// ---------- INJECTING HERE ----------
+1B673830: 89 70 48                       -  mov [rax+48],esi
+1B673833: 83 FE 03                       -  cmp esi,03
+// ---------- DONE INJECTING  ----------
+1B673836: 75 1F                          -  jne 1B673857
+1B673838: 48 8B CF                       -  mov rcx,rdi
+1B67383B: BA 01 00 00 00                 -  mov edx,00000001
+1B673840: 48 83 EC 20                    -  sub rsp,20
+1B673844: 49 BB A0 0A 67 1B 00 00 00 00  -  mov r11,000000001B670AA0
+1B67384E: 41 FF D3                       -  call r11
+1B673851: 48 83 C4 20                    -  add rsp,20
+1B673855: EB 1A                          -  jmp 1B673871
+1B673857: 48 8B CF                       -  mov rcx,rdi
+1B67385A: 33 D2                          -  xor edx,edx
+}
+</AssemblerScript>
+        </CheatEntry>
       </CheatEntries>
     </CheatEntry>
   </CheatEntries>
@@ -451,6 +526,7 @@ URL          : https://github.com/Jim00000/Langrisser-I-And-II-Cheat-Table
 03.14.2020 update
 - Add "No Eagic Effect Timer Decrement" cheat
 - Add "Full Move Range" cheat
+- Add "Unlimited move in this turn" cheat
 03.13.2020 update
 - Initial release
 [MIT License]
