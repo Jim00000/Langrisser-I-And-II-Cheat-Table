@@ -244,6 +244,87 @@ dealloc(newmem)
 }
 </AssemblerScript>
         </CheatEntry>
+        <CheatEntry>
+          <ID>14</ID>
+          <Description>"No Eagic Effect Timer Decrement (effect on Player/Ally)"</Description>
+          <LastState Activated="1"/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>define(address,UnitCTRL:UpdateMagicEffectTimer+80)
+define(bytes,FF C9 66 89 08)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,UnitCTRL:UpdateMagicEffectTimer+80)
+
+label(writeBackMemory)
+label(return)
+label(decreaseMagicEffectTimer)
+
+newmem:
+  // rsi    : UnitCTRL
+  // rsi+18 : GameCommon.UnitWork
+  // ------------------------------
+  // ecx    : magicEffectTimerCount
+  push rsi
+  // Get UnitWork Address
+  mov rsi, [rsi+18]
+  // Check GameCommon.UnitWork::playerType. If this unit is a human player or an
+  // AI alliance, skip the instruction which decrease the timer of a certain
+  // magic effect
+  cmp [rsi+3c], 2
+  pop rsi
+  jne writeBackMemory
+
+decreaseMagicEffectTimer:
+  dec ecx
+writeBackMemory:
+  mov [rax],cx
+  jmp return
+
+address:
+  jmp newmem
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // dec ecx
+  // mov [rax],cx
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: UnitCTRL:UpdateMagicEffectTimer+80
+
+07ADABE6: 48 0F BF 00                    -  movsx rax,word ptr [rax]
+07ADABEA: 83 F8 63                       -  cmp eax,63
+07ADABED: 0F 8D 5E 00 00 00              -  jnl 07ADAC51
+07ADABF3: 48 8B 46 18                    -  mov rax,[rsi+18]
+07ADABF7: 48 8B 40 18                    -  mov rax,[rax+18]
+07ADABFB: 48 63 CF                       -  movsxd  rcx,edi
+07ADABFE: 39 48 18                       -  cmp [rax+18],ecx
+07ADAC01: 0F 86 C9 00 00 00              -  jbe 07ADACD0
+07ADAC07: 48 8D 44 48 20                 -  lea rax,[rax+rcx*2+20]
+07ADAC0C: 48 0F BF 08                    -  movsx rcx,word ptr [rax]
+// ---------- INJECTING HERE ----------
+07ADAC10: FF C9                          -  dec ecx
+07ADAC12: 66 89 08                       -  mov [rax],cx
+// ---------- DONE INJECTING  ----------
+07ADAC15: 48 8B 46 18                    -  mov rax,[rsi+18]
+07ADAC19: 48 8B 40 18                    -  mov rax,[rax+18]
+07ADAC1D: 48 63 CF                       -  movsxd  rcx,edi
+07ADAC20: 39 48 18                       -  cmp [rax+18],ecx
+07ADAC23: 0F 86 90 00 00 00              -  jbe 07ADACB9
+07ADAC29: 48 8D 44 48 20                 -  lea rax,[rax+rcx*2+20]
+07ADAC2E: 48 0F BF 00                    -  movsx rax,word ptr [rax]
+07ADAC32: 85 C0                          -  test eax,eax
+07ADAC34: 7F 1B                          -  jg 07ADAC51
+07ADAC36: 48 8B CE                       -  mov rcx,rsi
+}
+</AssemblerScript>
+        </CheatEntry>
       </CheatEntries>
     </CheatEntry>
   </CheatEntries>
@@ -270,13 +351,16 @@ dealloc(newmem)
   </Structures>
   <Comments>Game         : Langrisser I &amp; II (Steam)
 Author       : Jim00000
-Last Update  : 03.13.2020
+Last Update  : 03.14.2020
 CE Version   : 7.0
 [Cheat Table Contents]
 - Fund Pointer
 - God Mode (effect on Player/Ally)
 - No MP Consumption (effect on Player/Ally)
+- No Eagic Effect Timer Decrement (effect on Player/Ally)
 [ChangeLog]
+03.14.2020 update
+- Add "No Eagic Effect Timer Decrement" cheat
 03.13.2020 update
 - Initial release
 [MIT License]
@@ -295,5 +379,6 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</Comments>
+SOFTWARE.
+</Comments>
 </CheatTable>
