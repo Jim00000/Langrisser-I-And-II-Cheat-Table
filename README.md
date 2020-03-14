@@ -12,6 +12,7 @@ Open cheat engine, select "Langrisser I And II" game process, load this cheat ta
 - Fund Pointer (See *1)
 - God Mode (effect on Player/Ally)
 - No MP Consumption (effect on Player/Ally)
+- No Magic Effect Timer Decrement (effect on Player/Ally)
 
 ## Note
 - (*1) You need to consume your fund to activate this cheat to get the pointer of the fund (e.g. buy/sell something, hire the Mercenaries, etc.)
