@@ -11,6 +11,12 @@ Open cheat engine, select "Langrisser I And II" game process, load this cheat ta
 # Contents
 - Fund Pointer (See *1)
 - Set Class Point (CP) as 999
+- Set Attack 999 (effect on player-controlled units)
+- Set Defense 999 (effect on player-controlled units)
+- Set Magic Attack 999 (effect on player-controlled units)
+- Set Magic Defense 999 (effect on player-controlled units)
+- Set Dexterity 999 (effect on player-controlled units) 
+- Set Agility 999 (effect on player-controlled units) 
 - God Mode (effect on Player/Ally)
 - No MP Consumption (effect on Player/Ally)
 - No Magic Effect Timer Decrement (effect on Player/Ally)
