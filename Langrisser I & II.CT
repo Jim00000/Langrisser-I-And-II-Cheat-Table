@@ -856,6 +856,83 @@ dealloc(newmem)
 }
 </AssemblerScript>
         </CheatEntry>
+        <CheatEntry>
+          <ID>23</ID>
+          <Description>"Set M.Defense 999 (effect on Player)"</Description>
+          <LastState Activated="1"/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>define(address,UnitCTRL:GetM_Defense+14d)
+define(bytes,49 8B C6 48 8D 65 E8)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,UnitCTRL:GetM_Defense+14d)
+
+label(code)
+label(return)
+
+newmem:
+  // rdi    : UnitCTRL
+  // rdi+18 : GameCommon.UnitWork
+  mov rax, [rdi+18]
+  // rax+3c : GameCommon.UnitWork::playerType
+  // Check whether the unit is player-controlled
+  cmp [rax+3c], 0
+  jne code
+
+  // If so, set the defense value 999
+  mov r14, #999
+
+code:
+  mov rax,r14
+  lea rsp,[rbp-18]
+  jmp return
+
+address:
+  jmp newmem
+  nop 2
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // mov rax,r14
+  // lea rsp,[rbp-18]
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: UnitCTRL:GetM_Defense+14d
+
+1B62E63D: 49 BB 60 47 5F 1B 00 00 00 00  -  mov r11,000000001B5F4760
+1B62E647: 41 FF D3                       -  call r11
+1B62E64A: 48 83 C4 20                    -  add rsp,20
+1B62E64E: 44 03 F0                       -  add r14d,eax
+1B62E651: B8 01 00 00 00                 -  mov eax,00000001
+1B62E656: 45 85 F6                       -  test r14d,r14d
+1B62E659: 4C 0F 4E F0                    -  cmovle r14,rax
+1B62E65D: B8 E7 03 00 00                 -  mov eax,000003E7
+1B62E662: 41 81 FE E8 03 00 00           -  cmp r14d,000003E8
+1B62E669: 4C 0F 4D F0                    -  cmovge r14,rax
+// ---------- INJECTING HERE ----------
+1B62E66D: 49 8B C6                       -  mov rax,r14
+1B62E670: 48 8D 65 E8                    -  lea rsp,[rbp-18]
+// ---------- DONE INJECTING  ----------
+1B62E674: 41 5E                          -  pop r14
+1B62E676: 5F                             -  pop rdi
+1B62E677: 5E                             -  pop rsi
+1B62E678: C9                             -  leave 
+1B62E679: C3                             -  ret 
+1B62E67A: 00 00                          -  add [rax],al
+1B62E67C: 00 00                          -  add [rax],al
+1B62E67E: 00 00                          -  add [rax],al
+1B62E680: 00 00                          -  add [rax],al
+1B62E682: 00 00                          -  add [rax],al
+}
+</AssemblerScript>
+        </CheatEntry>
       </CheatEntries>
     </CheatEntry>
   </CheatEntries>
@@ -891,6 +968,7 @@ URL          : https://github.com/Jim00000/Langrisser-I-And-II-Cheat-Table
 - Set Attack 999 (effect on player-controlled units)
 - Set Defense 999 (effect on player-controlled units)
 - Set Magic Attack 999 (effect on player-controlled units)
+- Set Magic Defense 999 (effect on player-controlled units)
 - God Mode (effect on Player/Ally)
 - No MP Consumption (effect on Player/Ally)
 - No Magic Effect Timer Decrement (effect on Player/Ally)
@@ -902,6 +980,7 @@ URL          : https://github.com/Jim00000/Langrisser-I-And-II-Cheat-Table
 - Add "Set Attack 999" cheat
 - Add "Set Defense 999" cheat
 - Add "Set Magic Attack 999" cheat
+- Add "Set Magic Defense 999" cheat
 - Add "Set Class Point (CP) as 999" cheat
 - Add "No Eagic Effect Timer Decrement" cheat
 - Add "Full Move Range" cheat
