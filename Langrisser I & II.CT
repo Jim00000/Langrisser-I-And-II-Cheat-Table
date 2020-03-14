@@ -97,7 +97,7 @@ unregistersymbol(FUND)
         <CheatEntry>
           <ID>12</ID>
           <Description>"God Mode (effect on Player/Ally)"</Description>
-          <LastState Activated="1"/>
+          <LastState/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:AddHP+3a)
 define(bytes,89 48 60 48 8B 47 18)
@@ -108,6 +108,7 @@ assert(address,bytes)
 alloc(newmem,$1000,UnitCTRL:AddHP+3a)
 
 label(code)
+label(writeBackMemory)
 label(return)
 
 newmem:
@@ -115,13 +116,14 @@ newmem:
   // Expect 0 --- human player
   // Expect 1 --- alliance AI
   // Expect 2 --- enemy AI
-  cmp [rax+3C], 2
-  jne return
+  cmp [rax+3C], 1
+  jle code
 
-code:
+writeBackMemory:
   // rax    = GameCommon.UnitWork
   // rax+60 = GameCommon.UnitWork::HP (System.Int32)
   mov [rax+60],ecx
+code:
   mov rax,[rdi+18]
   jmp return
 
@@ -172,7 +174,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>13</ID>
           <Description>"No MP Consumption (effect on Player/Ally)"</Description>
-          <LastState Activated="1"/>
+          <LastState/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:AddMP+3a)
 define(bytes,89 48 64 48 8B 47 18)
@@ -183,6 +185,7 @@ assert(address,bytes)
 alloc(newmem,$1000,UnitCTRL:AddMP+3a)
 
 label(code)
+label(writeBackMemory)
 label(return)
 
 newmem:
@@ -190,13 +193,14 @@ newmem:
   // Expect 0 --- human player
   // Expect 1 --- alliance AI
   // Expect 2 --- enemy AI
-  cmp [rax+3C], 2
-  jne return
+  cmp [rax+3C], 1
+  jle code
 
-code:
+writeBackMemory:
   // rax    = GameCommon.UnitWork
   // rax+64 = GameCommon.UnitWork::MP (System.Int32)
   mov [rax+64],ecx
+code:
   mov rax,[rdi+18]
   jmp return
 
@@ -247,7 +251,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>14</ID>
           <Description>"No Magic Effect Timer Decrement (effect on Player/Ally)"</Description>
-          <LastState Activated="1"/>
+          <LastState/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:UpdateMagicEffectTimer+80)
 define(bytes,FF C9 66 89 08)
@@ -272,9 +276,9 @@ newmem:
   // Check GameCommon.UnitWork::playerType. If this unit is a human player or an
   // AI alliance, skip the instruction which decrease the timer of a certain
   // magic effect
-  cmp [rsi+3c], 2
+  cmp [rsi+3c], 1
   pop rsi
-  jne writeBackMemory
+  jle writeBackMemory
 
 decreaseMagicEffectTimer:
   dec ecx
