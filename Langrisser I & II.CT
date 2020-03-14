@@ -859,7 +859,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>23</ID>
           <Description>"Set M.Defense 999 (effect on Player)"</Description>
-          <LastState Activated="1"/>
+          <LastState/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:GetM_Defense+14d)
 define(bytes,49 8B C6 48 8D 65 E8)
@@ -933,6 +933,83 @@ dealloc(newmem)
 }
 </AssemblerScript>
         </CheatEntry>
+        <CheatEntry>
+          <ID>24</ID>
+          <Description>"Set Dexterity 999 (effect on Player)"</Description>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>define(address,UnitCTRL:GetDexterity+ed)
+define(bytes,49 8B C7 48 8D 65 E8)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,UnitCTRL:GetDexterity+ed)
+
+label(code)
+label(return)
+
+newmem:
+  // rdi    : UnitCTRL
+  // rdi+18 : GameCommon.UnitWork
+  mov rax, [rdi+18]
+  // rax+3c : GameCommon.UnitWork::playerType
+  // Check whether the unit is player-controlled
+  cmp [rax+3c], 0
+  jne code
+
+  // If so, set the defense value 999
+  mov r15, #999
+
+code:
+  mov rax,r15
+  lea rsp,[rbp-18]
+  jmp return
+
+address:
+  jmp newmem
+  nop 2
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // mov rax,r15
+  // lea rsp,[rbp-18]
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: UnitCTRL:GetDexterity+ed
+
+1B62E96D: 49 BB 60 47 5F 1B 00 00 00 00  -  mov r11,000000001B5F4760
+1B62E977: 41 FF D3                       -  call r11
+1B62E97A: 48 83 C4 20                    -  add rsp,20
+1B62E97E: 44 03 F8                       -  add r15d,eax
+1B62E981: B8 01 00 00 00                 -  mov eax,00000001
+1B62E986: 45 85 FF                       -  test r15d,r15d
+1B62E989: 4C 0F 4E F8                    -  cmovle r15,rax
+1B62E98D: B8 E7 03 00 00                 -  mov eax,000003E7
+1B62E992: 41 81 FF E8 03 00 00           -  cmp r15d,000003E8
+1B62E999: 4C 0F 4D F8                    -  cmovge r15,rax
+// ---------- INJECTING HERE ----------
+1B62E99D: 49 8B C7                       -  mov rax,r15
+1B62E9A0: 48 8D 65 E8                    -  lea rsp,[rbp-18]
+// ---------- DONE INJECTING  ----------
+1B62E9A4: 41 5F                          -  pop r15
+1B62E9A6: 5F                             -  pop rdi
+1B62E9A7: 5E                             -  pop rsi
+1B62E9A8: C9                             -  leave 
+1B62E9A9: C3                             -  ret 
+1B62E9AA: 00 00                          -  add [rax],al
+1B62E9AC: 00 00                          -  add [rax],al
+1B62E9AE: 00 00                          -  add [rax],al
+1B62E9B0: 00 00                          -  add [rax],al
+1B62E9B2: 00 00                          -  add [rax],al
+}
+</AssemblerScript>
+        </CheatEntry>
       </CheatEntries>
     </CheatEntry>
   </CheatEntries>
@@ -969,6 +1046,7 @@ URL          : https://github.com/Jim00000/Langrisser-I-And-II-Cheat-Table
 - Set Defense 999 (effect on player-controlled units)
 - Set Magic Attack 999 (effect on player-controlled units)
 - Set Magic Defense 999 (effect on player-controlled units)
+- Set Dexterity 999 (effect on player-controlled units) 
 - God Mode (effect on Player/Ally)
 - No MP Consumption (effect on Player/Ally)
 - No Magic Effect Timer Decrement (effect on Player/Ally)
@@ -981,6 +1059,7 @@ URL          : https://github.com/Jim00000/Langrisser-I-And-II-Cheat-Table
 - Add "Set Defense 999" cheat
 - Add "Set Magic Attack 999" cheat
 - Add "Set Magic Defense 999" cheat
+- Add "Set Dexterity 999" cheat
 - Add "Set Class Point (CP) as 999" cheat
 - Add "No Eagic Effect Timer Decrement" cheat
 - Add "Full Move Range" cheat
