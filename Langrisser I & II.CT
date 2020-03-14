@@ -97,7 +97,7 @@ unregistersymbol(FUND)
         <CheatEntry>
           <ID>12</ID>
           <Description>"God Mode (effect on Player/Ally)"</Description>
-          <LastState/>
+          <LastState Activated="1"/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:AddHP+3a)
 define(bytes,89 48 60 48 8B 47 18)
@@ -174,7 +174,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>13</ID>
           <Description>"No MP Consumption (effect on Player/Ally)"</Description>
-          <LastState/>
+          <LastState Activated="1"/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:AddMP+3a)
 define(bytes,89 48 64 48 8B 47 18)
@@ -251,7 +251,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>14</ID>
           <Description>"No Magic Effect Timer Decrement (effect on Player/Ally)"</Description>
-          <LastState/>
+          <LastState Activated="1"/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>define(address,UnitCTRL:UpdateMagicEffectTimer+80)
 define(bytes,FF C9 66 89 08)
@@ -329,6 +329,89 @@ dealloc(newmem)
 }
 </AssemblerScript>
         </CheatEntry>
+        <CheatEntry>
+          <ID>16</ID>
+          <Description>"Full Move Range (effect on Player)"</Description>
+          <LastState Activated="1"/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>define(address,UnitCTRL:GetMoveRange+b8)
+define(bytes,49 8B C6 48 8D 65 E8)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,UnitCTRL:GetMoveRange+b8)
+
+label(code)
+label(return)
+
+newmem:
+ // rax    : range
+ // rdi    : UnitCtrl
+ // rdi+18 : GameCommon.UnitWork
+ push rbx
+ push rdi
+
+ mov rdi, [rdi+18]
+ // rdi+3c : GameCommon.UnitWork::playerType (System.Int32)
+ // expect 0 : human player
+ cmp [rdi+3c], 0
+
+ pop rdi
+ pop rbx
+ // No effect if the unit is not player-controlled
+ jne code
+ mov r14, #99999
+
+code:
+  mov rax,r14
+  lea rsp,[rbp-18]
+  jmp return
+
+address:
+  jmp newmem
+  nop 2
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // mov rax,r14
+  // lea rsp,[rbp-18]
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: 1B642DD8
+
+1B642DB3: 41 FF D3                       -  call r11
+1B642DB6: 48 83 C4 20                    -  add rsp,20
+1B642DBA: 89 45 E4                       -  mov [rbp-1C],eax
+1B642DBD: 44 03 75 E4                    -  add r14d,[rbp-1C]
+1B642DC1: 33 C0                          -  xor eax,eax
+1B642DC3: 41 83 FE FF                    -  cmp r14d,-01
+1B642DC7: 4C 0F 4E F0                    -  cmovle r14,rax
+1B642DCB: B8 1E 00 00 00                 -  mov eax,0000001E
+1B642DD0: 41 83 FE 1F                    -  cmp r14d,1F
+1B642DD4: 4C 0F 4D F0                    -  cmovge r14,rax
+// ---------- INJECTING HERE ----------
+1B642DD8: 49 8B C6                       -  mov rax,r14
+1B642DDB: 48 8D 65 E8                    -  lea rsp,[rbp-18]
+// ---------- DONE INJECTING  ----------
+1B642DDF: 41 5E                          -  pop r14
+1B642DE1: 5F                             -  pop rdi
+1B642DE2: 5E                             -  pop rsi
+1B642DE3: C9                             -  leave 
+1B642DE4: C3                             -  ret 
+1B642DE5: 00 00                          -  add [rax],al
+1B642DE7: 00 00                          -  add [rax],al
+1B642DE9: 00 00                          -  add [rax],al
+1B642DEB: 00 C5                          -  add ch,al
+1B642DED: 00 00                          -  add [rax],al
+}
+</AssemblerScript>
+        </CheatEntry>
       </CheatEntries>
     </CheatEntry>
   </CheatEntries>
@@ -356,15 +439,18 @@ dealloc(newmem)
   <Comments>Game         : Langrisser I &amp; II (Steam)
 Author       : Jim00000
 Last Update  : 03.14.2020
-CE Version   : 7.0
+CE Version   : Support CE 7.0 or above
+URL          : https://github.com/Jim00000/Langrisser-I-And-II-Cheat-Table
 [Cheat Table Contents]
 - Fund Pointer
 - God Mode (effect on Player/Ally)
 - No MP Consumption (effect on Player/Ally)
 - No Magic Effect Timer Decrement (effect on Player/Ally)
+- Full Move Range (effect on Player)
 [ChangeLog]
 03.14.2020 update
 - Add "No Eagic Effect Timer Decrement" cheat
+- Add "Full Move Range" cheat
 03.13.2020 update
 - Initial release
 [MIT License]
