@@ -361,7 +361,7 @@ newmem:
  pop rbx
  // No effect if the unit is not player-controlled
  jne code
- mov r14, #99999
+ mov r14, #999
 
 code:
   mov rax,r14
