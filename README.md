@@ -10,6 +10,7 @@ Open cheat engine, select "Langrisser I And II" game process, load this cheat ta
 
 # Contents
 - Fund Pointer (See *1)
+- Set Class Point (CP) as 999
 - God Mode (effect on Player/Ally)
 - No MP Consumption (effect on Player/Ally)
 - No Magic Effect Timer Decrement (effect on Player/Ally)
