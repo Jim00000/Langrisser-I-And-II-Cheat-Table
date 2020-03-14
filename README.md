@@ -15,10 +15,12 @@ Open cheat engine, select "Langrisser I And II" game process, load this cheat ta
 - No Magic Effect Timer Decrement (effect on Player/Ally)
 - Full Move Range (effect on Player)
 - Unlimited Move In This Turn (effect on Player) (See *2)
+- Make All Units Become Player-Controlled (See *3)
 
 ## Note
 - (*1) You need to consume your fund to activate this cheat to get the pointer of the fund (e.g. buy/sell something, hire the Mercenaries, etc.)
 - (*2) You need to turn it off before you end your turn. Otherwise, this game will be stuck until this cheat is deactivated
+- (*3) Notice that instant win while you end you turn because of no enemies on the map 😆
 
 # License
 MIT License
